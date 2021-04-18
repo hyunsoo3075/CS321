@@ -7,6 +7,9 @@ const downFilter = reaction => reaction.emoji.name === '⬇️';
 
 var keyValueArr = {};
 var oneTimeOnly = false;
+var questions = {};
+var answers = {};
+
 
 client.once('ready', () => {
     console.log('Bot is active!');
@@ -38,18 +41,30 @@ client.on('message', message => {
             .then(() => message.react('⬇️'));
     }
     else if (message.content.startsWith(`[ans]`)) {
-        
+        if(!(message in questions))
+        {
+            unique = getUID();
+            while(unique in questions) {
+                unique = getUID();
+            }
+            question = new Question(unique);
+            questions[unique] = question;
+            message.reply(`QID is ${unique}`);
+        }
     }
     else if (message.content.startsWith(`[answers]`)) {
-
+        if(message.content.split(" ")[1] in questions) {
+            questions[message.content.split(" ")[1]].addAnswer(message);
+        }
+        if(!(message.author.username.toLowerCase() in namedict)) {
+            namedict[message.author.username.toLowerCase()] = new User(message.author);
+        }
     }
     else if (message.content.startsWith(`[score]`)) {
-        
+        score = namedict[message.content.split(" ")[1].toLowerCase()].getPoint();
+        message.reply(`${message.content.split(" ")[1]}'s score: ${score }`);
     }
-    else {
-
-    }
-
+   
     //counts upvote and downvote reactions for 15 seconds
     message.awaitReactions(upFilter, { time: 15000 })
         .then(collected => collected.map(s => console.log(`Collected ${s.count}`)));
