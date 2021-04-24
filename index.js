@@ -109,6 +109,9 @@ client.on('message', message => {
         allusers.sort(function (a, b) {return a.score - b.score});
         var ans = "";
         var to = Math.min(parseInt(message.content.split(" ")[1], 10), allusers.length);
+	if (isNaN(to)) {
+	    to = 10;
+	}
         for(var i = 0; i < to; i++) {
             ans = ans + 'Number: ' + (i + 1) + ' User: ' + allusers[i].username + ' Score: ' + allusers[i].point + '\n';
         }
